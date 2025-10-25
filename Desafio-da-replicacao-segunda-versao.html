@@ -9,11 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pamella Galvani Bulbov" />
 
-<meta name="date" content="2025-10-07" />
 
-<title>Democracia e COVID-19 – Replicacao e Extensao</title>
+<title>Desafio-da-replicacao-segunda-versao.knit</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,14 +348,13 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Democracia e COVID-19 – Replicacao e
-Extensao</h1>
-<h4 class="author">Pamella Galvani Bulbov</h4>
-<h4 class="date">2025-10-07</h4>
 
 </div>
 
 
+<hr />
+<p>output: pdf_document: latex_engine: xelatex html_document: df_print:
+paged</p>
 <pre class="r"><code># Pacotes necessarios
 library(dplyr)</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.3.3</code></pre>
@@ -397,9 +394,8 @@ library(sandwich)</code></pre>
 vdem &lt;- readRDS(&quot;C:/Users/galva/Downloads/Vdem13/V-Dem-CY-Core-v13.rds&quot;)
 vdem_2020 &lt;- vdem %&gt;%
   filter(year == 2020) %&gt;%
-  select(country_name, v2x_libdem, v2mecenefm, v2x_freexp_altinf)
-
-# COVID-19 Our World in Data
+  select(country_name, v2x_libdem, v2mecenefm, v2x_freexp_altinf)</code></pre>
+<pre class="r"><code># COVID-19 Our World in Data
 covid &lt;- read_csv(&quot;C:/Users/galva/Downloads/owid-covid-data.csv&quot;)</code></pre>
 <pre><code>## Rows: 429435 Columns: 67
 ## ── Column specification ────────────────────────────────────────────────────────
@@ -436,19 +432,18 @@ health_exp &lt;- WDI(
   start = 2020, end = 2020
 ) %&gt;%
   rename(country_name = country, health_expenditure_percent_gdp = SH.XPD.CHEX.GD.ZS) %&gt;%
-  select(country_name, health_expenditure_percent_gdp)
-
-# Polity5 2020
+  select(country_name, health_expenditure_percent_gdp)</code></pre>
+<pre class="r"><code># Polity5 2020
 polity_2020 &lt;- download_polity_annual() %&gt;%
   filter(year == 2020) %&gt;%
   select(country_name = polity_annual_country, polity_score = polity2) %&gt;%
   mutate(country_name = countrycode(country_name, &quot;country.name&quot;, &quot;country.name&quot;))</code></pre>
-<pre><code>## Downloading polity data...
-## Trying http://www.systemicpeace.org/inscr/p5v2018.sav ...
-## The downloaded polity dataset has 17574 rows
-## Original dataset has 17574 rows.
-## Processing the Polity 5 data - adding state system info...
-## The following different countries/country codes match to a single country unit in the destination system:</code></pre>
+<pre><code>## Downloading polity data...</code></pre>
+<pre><code>## Trying http://www.systemicpeace.org/inscr/p5v2018.sav ...</code></pre>
+<pre><code>## The downloaded polity dataset has 17574 rows</code></pre>
+<pre><code>## Original dataset has 17574 rows.</code></pre>
+<pre><code>## Processing the Polity 5 data - adding state system info...</code></pre>
+<pre><code>## The following different countries/country codes match to a single country unit in the destination system:</code></pre>
 <pre><code>## 
 ## 
 ## |country       | ccode|extended_country_name           | GWn| cown| min_date| max_date|  n|
@@ -514,19 +509,19 @@ polity_2020 &lt;- download_polity_annual() %&gt;%
 ## |Yemen North           |   678|Yemen (Arab Republic of Yemen)          | 678|  678|     1918|     1990|  73|
 ## |Yemen South           |   680|Yemen, People&#39;s Republic of             | 680|  680|     1967|     1990|  24|
 ## |Zimbabwe              |   552|Zimbabwe (Rhodesia)                     | 552|  552|     1980|     2018|  39|</code></pre>
-<pre><code>## Resulting dataset after processing has 17574 rows.
-## Changing the name of the original country column from country to polity_annual_country...
-## Ensuring year column is numeric...
-## Changing the name of the original code column from ccode to polity_annual_ccode...</code></pre>
+<pre><code>## Resulting dataset after processing has 17574 rows.</code></pre>
+<pre><code>## Changing the name of the original country column from country to polity_annual_country...</code></pre>
+<pre><code>## Ensuring year column is numeric...</code></pre>
+<pre><code>## Changing the name of the original code column from ccode to polity_annual_ccode...</code></pre>
 <pre class="r"><code># Freedom House 2020
 fh_data &lt;- download_fh()</code></pre>
-<pre><code>## Downloading  data...
-## Trying https://freedomhouse.org/sites/default/files/2023-02/Country_and_Territory_Ratings_and_Statuses_FIW_1973-2023%20.xlsx ...
-## The downloaded  dataset has 205 rows
-## Original dataset has 205 rows, but is not in country-year format
-## Processing the FH 2022 data - putting it in country-year format, adding state system info...</code></pre>
-<pre><code>## Warning in download_fh(): NAs introduzidos por coerção</code></pre>
-<pre><code>## Warning in download_fh(): NAs introduzidos por coerção</code></pre>
+<pre><code>## Downloading  data...</code></pre>
+<pre><code>## Trying https://freedomhouse.org/sites/default/files/2023-02/Country_and_Territory_Ratings_and_Statuses_FIW_1973-2023%20.xlsx ...</code></pre>
+<pre><code>## The downloaded  dataset has 205 rows</code></pre>
+<pre><code>## Original dataset has 205 rows, but is not in country-year format</code></pre>
+<pre><code>## Processing the FH 2022 data - putting it in country-year format, adding state system info...</code></pre>
+<pre><code>## Warning in download_fh(): NAs introduzidos por coerção
+## Warning in download_fh(): NAs introduzidos por coerção</code></pre>
 <pre><code>## The following country names are different in the destination system:</code></pre>
 <pre><code>## 
 ## 
@@ -574,9 +569,9 @@ fh_data &lt;- download_fh()</code></pre>
 ## |Yemen                          |Yemen (Arab Republic of Yemen)          | 678|  679|     1990|     2022| 33|
 ## |Yemen, N.                      |Yemen (Arab Republic of Yemen)          | 678|  678|     1972|     1989| 17|
 ## |Zimbabwe                       |Zimbabwe (Rhodesia)                     | 552|  552|     1972|     2022| 50|</code></pre>
-<pre><code>## Resulting dataset after processing has 9045 rows.
-## Changing the name of the original country column from country to fh_country...
-## Ensuring year column is numeric...</code></pre>
+<pre><code>## Resulting dataset after processing has 9045 rows.</code></pre>
+<pre><code>## Changing the name of the original country column from country to fh_country...</code></pre>
+<pre><code>## Ensuring year column is numeric...</code></pre>
 <pre class="r"><code>freedom_2020 &lt;- fh_data %&gt;%
   filter(year == 2020) %&gt;%
   select(country_name = fh_country, fh_total) %&gt;%
@@ -603,9 +598,8 @@ padroniza_paises &lt;- function(df, coluna = &quot;country_name&quot;) {
         TRUE ~ .data[[coluna]]  # mantém os outros nomes
       )
     )
-}
-
-# Aplicando em todas as bases
+}</code></pre>
+<pre class="r"><code># Aplicando em todas as bases
 vdem_2020    &lt;- padroniza_paises(vdem_2020)
 covid_2020   &lt;- padroniza_paises(covid_2020)
 polity_2020  &lt;- padroniza_paises(polity_2020)
@@ -722,23 +716,19 @@ merged_data &lt;- vdem_2020 %&gt;%
                                            mean(health_expenditure_percent_gdp, na.rm = TRUE),
                                            health_expenditure_percent_gdp),
     polity_score = ifelse(is.na(polity_score), mean(polity_score, na.rm = TRUE), polity_score)
-  )
-
-# Substituir NA em &#39;total&#39; (Freedom House), se existir
+  )</code></pre>
+<pre class="r"><code># Substituir NA em &#39;total&#39; (Freedom House), se existir
 if(&quot;total&quot; %in% colnames(merged_data)){
   merged_data &lt;- merged_data %&gt;%
     mutate(total = ifelse(is.na(total), mean(total, na.rm = TRUE), total))
-}
-
-# Criar pasta, se não existir
+}</code></pre>
+<pre class="r"><code># Criar pasta, se não existir
 dir.create(&quot;C:/Users/galva/Documents/Pamella_trabalhos/Desafio_da_replicacao_segunda_versao&quot;,
-           showWarnings = FALSE, recursive = TRUE)
-
-# Salvar a base final
+           showWarnings = FALSE, recursive = TRUE)</code></pre>
+<pre class="r"><code># Salvar a base final
 saveRDS(merged_data, 
-        file = &quot;C:/Users/galva/Documents/Pamella_trabalhos/Desafio_da_replicacao_segunda_versao/merged_data.rds&quot;)
-
-# Verificar linhas e primeiras observações
+        file = &quot;C:/Users/galva/Documents/Pamella_trabalhos/Desafio_da_replicacao_segunda_versao/merged_data.rds&quot;)</code></pre>
+<pre class="r"><code># Verificar linhas e primeiras observações
 cat(&quot;Linhas apos integracao e tratamento de NAs:&quot;, nrow(merged_data), &quot;\n&quot;)</code></pre>
 <pre><code>## Linhas apos integracao e tratamento de NAs: 179</code></pre>
 <pre class="r"><code>head(merged_data)</code></pre>
@@ -791,10 +781,8 @@ merged_clean &lt;- merged_data %&gt;%
   ) %&gt;%
   mutate(
     log_mortality = log(mortality_per_million + 1)
-  )
-
-
-# Ver quantas linhas sobraram
+  )</code></pre>
+<pre class="r"><code># Ver quantas linhas sobraram
 cat(&quot;Linhas apos limpeza para regressoes:&quot;, nrow(merged_clean), &quot;\n&quot;)</code></pre>
 <pre><code>## Linhas apos limpeza para regressoes: 162</code></pre>
 <pre class="r"><code># --- REGRESSAO LINEAR PARA V-DEM ---
@@ -1093,33 +1081,33 @@ sessionInfo()</code></pre>
 ##  [7] lifecycle_1.0.4      Deriv_4.1.6          dcurver_0.9.2       
 ## [10] cluster_2.1.8.1      mirt_1.45.1          magrittr_2.0.3      
 ## [13] compiler_4.3.1       rlang_1.1.1          sass_0.4.9          
-## [16] tools_4.3.1          utf8_1.2.6           yaml_2.3.10         
-## [19] knitr_1.50           labeling_0.4.3       curl_6.2.2          
-## [22] bit_4.6.0            plyr_1.8.9           xml2_1.3.8          
-## [25] withr_3.0.2          purrr_1.0.4          R.oo_1.27.1         
-## [28] grid_4.3.1           stats4_4.3.1         colorspace_2.1-1    
-## [31] future_1.58.0        progressr_0.15.1     GPArotation_2025.3-1
-## [34] globals_0.18.0       scales_1.3.0         MASS_7.3-60         
-## [37] cli_3.6.1            crayon_1.5.3         rmarkdown_2.29      
-## [40] vegan_2.7-1          generics_0.1.4       rstudioapi_0.17.1   
-## [43] future.apply_1.20.0  httr_1.4.7           SimDesign_2.21      
-## [46] tzdb_0.5.0           sessioninfo_1.2.3    pbapply_1.7-2       
-## [49] cachem_1.1.0         stringr_1.5.1        audio_0.1-11        
-## [52] splines_4.3.1        parallel_4.3.1       cellranger_1.1.0    
-## [55] beepr_2.0            vctrs_0.6.5          Matrix_1.6-5        
-## [58] jsonlite_2.0.0       hms_1.1.3            bit64_4.6.0-1       
-## [61] fuzzyjoin_0.1.6.1    listenv_0.9.1        testthat_3.2.3      
-## [64] clipr_0.8.0          jquerylib_0.1.4      tidyr_1.3.1         
-## [67] bibtex_0.5.1         glue_1.8.0           parallelly_1.45.0   
-## [70] RefManageR_1.4.0     codetools_0.2-20     lubridate_1.9.4     
-## [73] stringi_1.8.7        gtable_0.3.6         munsell_0.5.1       
-## [76] tibble_3.2.1         pillar_1.11.0        htmltools_0.5.8.1   
-## [79] brio_1.1.5           R6_2.6.1             vroom_1.6.5         
-## [82] evaluate_1.0.5       lattice_0.22-7       haven_2.5.4         
-## [85] R.methodsS3_1.8.2    backports_1.5.0      bslib_0.9.0         
-## [88] Rcpp_1.0.14          gridExtra_2.3        nlme_3.1-168        
-## [91] permute_0.9-8        mgcv_1.9-3           xfun_0.52           
-## [94] forcats_1.0.0        pkgconfig_2.0.3</code></pre>
+## [16] tools_4.3.1          utf8_1.2.6           knitr_1.50          
+## [19] labeling_0.4.3       curl_6.2.2           bit_4.6.0           
+## [22] plyr_1.8.9           xml2_1.3.8           withr_3.0.2         
+## [25] purrr_1.0.4          R.oo_1.27.1          grid_4.3.1          
+## [28] stats4_4.3.1         colorspace_2.1-1     future_1.58.0       
+## [31] progressr_0.15.1     GPArotation_2025.3-1 globals_0.18.0      
+## [34] scales_1.3.0         MASS_7.3-60          cli_3.6.1           
+## [37] crayon_1.5.3         rmarkdown_2.29       vegan_2.7-1         
+## [40] generics_0.1.4       rstudioapi_0.17.1    future.apply_1.20.0 
+## [43] httr_1.4.7           SimDesign_2.21       tzdb_0.5.0          
+## [46] sessioninfo_1.2.3    pbapply_1.7-2        cachem_1.1.0        
+## [49] stringr_1.5.1        audio_0.1-11         splines_4.3.1       
+## [52] parallel_4.3.1       cellranger_1.1.0     beepr_2.0           
+## [55] vctrs_0.6.5          Matrix_1.6-5         jsonlite_2.0.0      
+## [58] hms_1.1.3            bit64_4.6.0-1        fuzzyjoin_0.1.6.1   
+## [61] listenv_0.9.1        testthat_3.2.3       clipr_0.8.0         
+## [64] jquerylib_0.1.4      tidyr_1.3.1          bibtex_0.5.1        
+## [67] glue_1.8.0           parallelly_1.45.0    RefManageR_1.4.0    
+## [70] codetools_0.2-20     lubridate_1.9.4      stringi_1.8.7       
+## [73] gtable_0.3.6         munsell_0.5.1        tibble_3.2.1        
+## [76] pillar_1.11.0        htmltools_0.5.8.1    brio_1.1.5          
+## [79] R6_2.6.1             vroom_1.6.5          evaluate_1.0.5      
+## [82] lattice_0.22-7       haven_2.5.4          R.methodsS3_1.8.2   
+## [85] backports_1.5.0      bslib_0.9.0          Rcpp_1.0.14         
+## [88] gridExtra_2.3        nlme_3.1-168         permute_0.9-8       
+## [91] mgcv_1.9-3           xfun_0.52            forcats_1.0.0       
+## [94] pkgconfig_2.0.3</code></pre>
 
 
 

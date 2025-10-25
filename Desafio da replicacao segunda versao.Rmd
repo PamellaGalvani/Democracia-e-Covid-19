@@ -1,13 +1,14 @@
 ---
-title: "Democracia e COVID-19 – Replicacao e Extensao"
-author: "Pamella Galvani Bulbov"
-date: "2025-10-07"
 output:
   pdf_document:
     latex_engine: xelatex
----
+  html_document:
+    df_print: paged
+  
+  
 
 ```{r}
+
 # Pacotes necessarios
 library(dplyr)
 library(readr)
@@ -19,10 +20,7 @@ library(broom)
 library(ggplot2)
 library(sandwich)
 library(lmtest)
-```
 
-
-```{r}
 # 1. CARREGAR BASES DE DADOS
 
 # V-Dem 2020
@@ -30,6 +28,13 @@ vdem <- readRDS("C:/Users/galva/Downloads/Vdem13/V-Dem-CY-Core-v13.rds")
 vdem_2020 <- vdem %>%
   filter(year == 2020) %>%
   select(country_name, v2x_libdem, v2mecenefm, v2x_freexp_altinf)
+```
+  
+
+  
+  
+  
+```{r}
 
 # COVID-19 Our World in Data
 covid <- read_csv("C:/Users/galva/Downloads/owid-covid-data.csv")
@@ -44,7 +49,10 @@ covid_2020 <- covid %>%
     continent = first(continent)
   ) %>%
   rename(country_name = location)
+```
 
+
+```{r}
 # Health expenditure (% PIB) - World Bank
 health_exp <- WDI(
   country = "all",
@@ -53,13 +61,19 @@ health_exp <- WDI(
 ) %>%
   rename(country_name = country, health_expenditure_percent_gdp = SH.XPD.CHEX.GD.ZS) %>%
   select(country_name, health_expenditure_percent_gdp)
+```
 
+
+```{r}
 # Polity5 2020
 polity_2020 <- download_polity_annual() %>%
   filter(year == 2020) %>%
   select(country_name = polity_annual_country, polity_score = polity2) %>%
   mutate(country_name = countrycode(country_name, "country.name", "country.name"))
+```
 
+
+```{r}
 # Freedom House 2020
 fh_data <- download_fh()
 freedom_2020 <- fh_data %>%
@@ -88,7 +102,10 @@ padroniza_paises <- function(df, coluna = "country_name") {
       )
     )
 }
+```
 
+
+```{r}
 # Aplicando em todas as bases
 vdem_2020    <- padroniza_paises(vdem_2020)
 covid_2020   <- padroniza_paises(covid_2020)
@@ -128,21 +145,33 @@ merged_data <- vdem_2020 %>%
                                            health_expenditure_percent_gdp),
     polity_score = ifelse(is.na(polity_score), mean(polity_score, na.rm = TRUE), polity_score)
   )
+```
 
+
+```{r}
 # Substituir NA em 'total' (Freedom House), se existir
 if("total" %in% colnames(merged_data)){
   merged_data <- merged_data %>%
     mutate(total = ifelse(is.na(total), mean(total, na.rm = TRUE), total))
 }
+```
 
+
+```{r}
 # Criar pasta, se não existir
 dir.create("C:/Users/galva/Documents/Pamella_trabalhos/Desafio_da_replicacao_segunda_versao",
            showWarnings = FALSE, recursive = TRUE)
+```
 
+
+```{r}
 # Salvar a base final
 saveRDS(merged_data, 
         file = "C:/Users/galva/Documents/Pamella_trabalhos/Desafio_da_replicacao_segunda_versao/merged_data.rds")
+```
 
+
+```{r}
 # Verificar linhas e primeiras observações
 cat("Linhas apos integracao e tratamento de NAs:", nrow(merged_data), "\n")
 head(merged_data)
@@ -177,34 +206,51 @@ merged_clean <- merged_data %>%
   mutate(
     log_mortality = log(mortality_per_million + 1)
   )
+```
 
 
+```{r}
 # Ver quantas linhas sobraram
 cat("Linhas apos limpeza para regressoes:", nrow(merged_clean), "\n")
+```
 
+
+```{r}
 # --- REGRESSAO LINEAR PARA V-DEM ---
 model_vdem <- lm(log_mortality ~ v2x_libdem + gdp_per_capita + median_age + population_density,
                  data = merged_clean)
 summary(model_vdem)
 tidy(model_vdem)
+```
 
+
+```{r}
 # --- REGRESSAO LINEAR PARA POLITY5 ---
 model_polity <- lm(log_mortality ~ polity_score + gdp_per_capita + median_age + population_density,
                    data = merged_clean)
 summary(model_polity)
 tidy(model_polity)
+```
 
+
+```{r}
 # --- REGRESSAO LINEAR PARA FREEDOM HOUSE ---
 model_fh <- lm(log_mortality ~ fh_total + gdp_per_capita + median_age + population_density,
                data = merged_clean)
 summary(model_fh)
 tidy(model_fh)
+```
 
+
+```{r}
 # --- MODELOS ROBUSTOS COM ERROS PADRAO HC1 ---
 coeftest(model_vdem, vcov = vcovHC(model_vdem, type = "HC1"))
 coeftest(model_polity, vcov = vcovHC(model_polity, type = "HC1"))
 coeftest(model_fh, vcov = vcovHC(model_fh, type = "HC1"))
+```
 
+
+```{r}
 # --- TABELA COMPARATIVA DE TODOS OS MODELOS ---
 comparative_table <- bind_rows(
   tidy(model_vdem) %>% mutate(Modelo = "V-Dem"),
@@ -214,7 +260,10 @@ comparative_table <- bind_rows(
   select(Modelo, term, estimate, std.error, statistic, p.value)
 
 print(comparative_table)
+```
 
+
+```{r}
 # --- GRAFICOS DE DISPERSAO COM LINHA DE REGRESSAO ---
 ggplot(merged_clean, aes(x = v2x_libdem, y = log_mortality)) +
   geom_point() +
@@ -224,7 +273,10 @@ ggplot(merged_clean, aes(x = v2x_libdem, y = log_mortality)) +
     x = "Indice de Democracia V-Dem",
     y = "Mortalidade COVID-19 (log)"
   )
+```
 
+
+```{r}
 ggplot(merged_clean, aes(x = polity_score, y = log_mortality)) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -233,7 +285,10 @@ ggplot(merged_clean, aes(x = polity_score, y = log_mortality)) +
     x = "Indice Polity5",
     y = "Mortalidade COVID-19 (log)"
   )
+```
 
+
+```{r}
 ggplot(merged_clean, aes(x = fh_total, y = log_mortality)) +
   geom_point() +
   geom_smooth(method = "lm") +
